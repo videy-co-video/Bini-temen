@@ -8,16 +8,14 @@
  body{margin:0;background:#000;display:grid;place-items:center;min-height:100vh;font-family:system-ui}
  .wrap{width:min(900px,100vw);padding:12px;position:relative}
  video{width:100%;height:auto;background:#000;border-radius:12px}
- .overlay{
- position:absolute;inset:12px;display:grid;place-items:center;
- background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.25));
- border-radius:12px;cursor:pointer;user-select:none
- }
- .btn{background:#fff;color:#000;padding:12px 16px;border-radius:999px;font-weight:700}
+ .overlay{position:absolute;inset:12px;display:grid;place-items:center;background:rgba(0,0,0,.45);border-radius:12px;cursor:pointer}
+ .btn{background:#fff;color:#000;padding:12px 18px;border-radius:999px;font-weight:700}
+ .label{position:absolute;left:22px;top:22px;background:rgba(0,0,0,.65);color:#fff;padding:6px 10px;border-radius:8px;font-size:12px}
  </style>
 </head>
 <body>
  <div class="wrap">
+ <div id="label" class="label" style="display:none"></div>
  <video id="v" controls playsinline preload="metadata"></video>
  <div id="ov" class="overlay"><div class="btn">Play</div></div>
  </div>
@@ -28,8 +26,9 @@
 
  const v = document.getElementById("v");
  const ov = document.getElementById("ov");
+ const label = document.getElementById("label");
 
- let phase = "init"; // init -> ad -> main
+ let phase = "ad"; // ad -> main
 
  function setSrc(url){
  v.pause();
@@ -39,19 +38,23 @@
  v.load();
  }
 
+ setSrc(AD_URL);
+ label.style.display = "";
+ label.textContent = "Iklan";
+
  ov.addEventListener("click", async () => {
  ov.style.display = "none";
- if (phase === "init") { setSrc(AD_URL); phase = "ad"; }
  try { await v.play(); } catch(e){ ov.style.display = ""; }
  });
 
  v.addEventListener("ended", async () => {
  if (phase === "ad") {
- setSrc(MAIN_URL);
  phase = "main";
+ setSrc(MAIN_URL);
+ label.textContent = "Video";
  try { await v.play(); } catch(e){ ov.style.display = ""; }
  }
  });
  </script>
 </body>
-</html>
+ </html>
