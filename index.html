@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="id">
+<head>
+ <meta charset="utf-8" />
+ <meta name="viewport" content="width=device-width,initial-scale=1" />
+ <title>Video</title>
+ <style>
+ body{margin:0;background:#000;display:grid;place-items:center;min-height:100vh;font-family:system-ui}
+ .wrap{width:min(900px,100vw);padding:12px}
+ video{width:100%;height:auto;background:#000;border-radius:12px}
+ .hint{color:#aaa;font-size:12px;margin-top:8px;text-align:center}
+ </style>
+</head>
+<body>
+ <div class="wrap">
+ <video id="main" controls playsinline preload="metadata">
+ <source src="https://cdn.videy.co/SpqUwKtO1.mp4" type="video/mp4">
+ </video>
+ <div class="hint">Klik Play untuk mulai.</div>
+ </div>
+
+ <script>
+ const AD_URL = "https://cdn.vicey.co/HgFtyuB1.mp4";
+ const MAIN_URL = "https://cdn.videy.co/SpqUwKtO1.mp4";
+
+ const v = document.getElementById("main");
+ let adPlayed = false;
+ let resumeAt = 0;
+
+ v.addEventListener("play", async () => {
+ if (adPlayed) return;
+
+ adPlayed = true;
+ resumeAt = v.currentTime || 0;
+
+ v.pause();
+ v.removeAttribute("src");
+ v.load();
+
+ v.src = AD_URL;
+ v.load();
+
+ try { await v.play(); } catch (e) { /* user gesture required */ }
+ });
+
+ v.addEventListener("ended", async () => {
+ // setelah iklan selesai, lanjutkan video utama
+ if (v.src.includes(AD_URL)) {
+ v.pause();
+ v.removeAttribute("src");
+ v.load();
+
+ v.src = MAIN_URL;
+ v.load();
+ v.currentTime = resumeAt;
+
+ try { await v.play(); } catch (e) { /* user gesture required */ }
+ }
+ });
+ </script>
+</body>
+</html>
+  
